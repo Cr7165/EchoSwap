@@ -1,0 +1,41 @@
+What You Should Add (High-Priority Additions)
+Add these sections or paragraphs verbatim or slightly adapted to your Terms of Service and Privacy Policy pages. Do this before you start charging real money.
+1. In Terms of Service – Add / Strengthen These Clauses
+A. Not Financial or Investment Advice (very important)
+No Financial, Investment, or Tax Advice
+The information provided by Echo Swap, including but not limited to price alerts, confidence scores, pre-dip warnings, whale tracking, cross-chain signals, and any autonomous trading features, is for informational and entertainment purposes only.
+Echo Swap is not a registered investment advisor, broker-dealer, financial planner, or tax advisor. Nothing on the service constitutes a recommendation to buy, sell, or hold any cryptocurrency or other asset.
+You are solely responsible for any investment decisions you make. Past performance is not indicative of future results. Cryptocurrency markets are highly volatile and you may lose all or part of your invested capital.
+Use of the service is at your own risk.
+B. Limitation of Liability (cap it)
+Limitation of Liability
+To the fullest extent permitted by law, Echo Swap, its owners, developers, affiliates, and service providers shall not be liable for any indirect, incidental, special, consequential, or punitive damages, including loss of profits, data, goodwill, or cryptocurrency value, arising from your use of the service.
+In no event shall our total liability exceed the amount you paid us in the twelve (12) months preceding the claim (or $100, whichever is greater).
+C. Assumption of Risk (especially for autonomous trading)
+Assumption of Risk – Autonomous Trading
+If you enable autonomous trading features (if and when available), you acknowledge that automated trading involves significant risk of loss. You are solely responsible for all trades executed by the bot on your behalf.
+Echo Swap makes no guarantee of profitability, accuracy, or execution of trades. Market conditions, slippage, network congestion, and other factors may cause trades to fail or execute at unfavorable prices.
+You agree to indemnify and hold Echo Swap harmless from any losses, claims, or liabilities arising from autonomous trading.
+D. Arbitration & Class Action Waiver
+Dispute Resolution
+Any dispute arising from these terms shall be resolved through binding arbitration in Denver, Colorado, under the rules of the American Arbitration Association. You waive any right to participate in a class action lawsuit or class-wide arbitration.
+2. In Privacy Policy – Strengthen These
+A. Wallet & Financial Data
+Wallet Addresses & Financial Information
+If you connect a wallet (e.g., Phantom), we may temporarily access your public wallet address and transaction history solely to provide portfolio tracking or autonomous trading features (if enabled).
+We do not store your private keys, seed phrases, or any information that could allow access to your funds.
+Wallet data is processed in accordance with Phantom’s privacy policy and is deleted when you disconnect.
+B. No Guarantee of Accuracy
+No Guarantee of Data Accuracy
+While we strive to provide accurate price data and alerts, we do not guarantee the timeliness, completeness, or accuracy of any information. Market data may be delayed or incorrect due to third-party API issues.
+C. Third-Party Services
+Third-Party Services
+We use Stripe for payments, Telegram for communication, Coinbase/Binance APIs for price data, and Phantom for wallet connection. Your use of these services is governed by their respective privacy policies.
+3. Quick Implementation Steps
+
+Update Terms page
+Add the new sections above (copy-paste) at the top or in a dedicated “Disclaimers & Limitations” section.
+Update Privacy Policy
+Add the wallet and accuracy paragraphs.
+Add footer disclaimer on every page
+Include this short line at the bottom of every page (home, terms, privacy, dashboard):

@@ -1,0 +1,127 @@
+from flask import Flask, request, jsonify, render_template_string
+import stripe
+import os
+
+app = Flask(__name__)
+
+# Load your Stripe secret key from Replit secrets
+stripe.api_key = os.environ.get('STRIPE_SECRET_KEY')
+
+# Your Stripe Price IDs (copy from Stripe dashboard → Products → Prices)
+PRICE_IDS = {
+    'basic': 'price_XXXXXXXXXXXXXXXXXXXXXXX',   # replace with your real Basic price ID
+    'pro':   'price_XXXXXXXXXXXXXXXXXXXXXXX',   # replace with Pro
+    'elite': 'price_XXXXXXXXXXXXXXXXXXXXXXX',   # replace with Elite
+}
+
+@app.route('/')
+def home():
+    return render_template_string("""
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Echo Swap – Choose Tier</title>
+      <script src="https://cdn.tailwindcss.com"></script>
+      <script src="https://js.stripe.com/v3/"></script>
+    </head>
+    <body class="bg-black text-white min-h-screen p-8">
+      <div class="max-w-5xl mx-auto text-center">
+        <h1 class="text-5xl font-bold mb-12 text-cyan-400">Echo Swap</h1>
+
+        <div class="grid md:grid-cols-3 gap-8">
+          <!-- Basic -->
+          <div class="bg-gray-900 p-8 rounded-xl border border-cyan-600">
+            <h2 class="text-3xl font-bold text-cyan-300">Basic</h2>
+            <p class="text-5xl font-bold my-6">$9<span class="text-xl">/mo</span></p>
+            <p class="mb-6 text-gray-400">Core dip alerts</p>
+            <button onclick="createCheckout('basic')" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white py-4 rounded-lg font-bold">
+              Choose Basic
+            </button>
+          </div>
+
+          <!-- Pro -->
+          <div class="bg-gray-900 p-8 rounded-xl border border-purple-600 relative">
+            <span class="absolute -top-3 left-1/2 -translate-x-1/2 bg-purple-600 px-4 py-1 rounded-full text-sm">Recommended</span>
+            <h2 class="text-3xl font-bold text-purple-300">Pro</h2>
+            <p class="text-5xl font-bold my-6">$19<span class="text-xl">/mo</span></p>
+            <p class="mb-6 text-gray-400">Pre-dips + confidence + portfolio</p>
+            <button onclick="createCheckout('pro')" class="w-full bg-purple-600 hover:bg-purple-500 text-white py-4 rounded-lg font-bold">
+              Choose Pro
+            </button>
+          </div>
+
+          <!-- Elite -->
+          <div class="bg-gray-900 p-8 rounded-xl border border-purple-800">
+            <h2 class="text-3xl font-bold text-purple-400">Elite</h2>
+            <p class="text-5xl font-bold my-6">$29<span class="text-xl">/mo</span></p>
+            <p class="mb-6 text-gray-400">Whale tracking + concierge</p>
+            <button onclick="createCheckout('elite')" class="w-full bg-purple-800 hover:bg-purple-700 text-white py-4 rounded-lg font-bold">
+              Choose Elite
+            </button>
+          </div>
+        </div>
+
+        <p class="mt-12 text-gray-500 text-sm">
+          Not financial advice. Crypto trading involves risk of loss.
+        </p>
+      </div>
+
+      <script>
+        const stripe = Stripe('pk_test_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX');  // ← PASTE YOUR PUBLISHABLE KEY HERE
+
+        async function createCheckout(tier) {
+          try {
+            const response = await fetch(`/create-checkout-session/${tier}`, {
+              method: 'POST',
+            });
+
+            if (!response.ok) {
+              const err = await response.json();
+              alert('Error: ' + (err.error || 'Something went wrong'));
+              return;
+            }
+
+            const { id } = await response.json();
+            stripe.redirectToCheckout({ sessionId: id });
+          } catch (err) {
+            alert('Connection error: ' + err.message);
+          }
+        }
+      </script>
+    </body>
+    </html>
+    """)
+
+@app.route('/create-checkout-session/<tier>', methods=['POST'])
+def create_checkout_session(tier):
+    if tier not in PRICE_IDS:
+        return jsonify({'error': 'Invalid tier'}), 400
+
+    try:
+        session = stripe.checkout.Session.create(
+            payment_method_types=['card'],
+            line_items=[{
+                'price': PRICE_IDS[tier],
+                'quantity': 1,
+            }],
+            mode='subscription',
+            success_url='https://your-replit-url.repl.co/success',  # change to your real URL
+            cancel_url='https://your-replit-url.repl.co/cancel',
+        )
+        return jsonify({'id': session.id})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/success')
+def success():
+    return "<h1 style='color:cyan;text-align:center'>Payment Successful!</h1><p>You're now subscribed. Check Telegram for alerts.</p>"
+
+@app.route('/cancel')
+def cancel():
+    return "<h1 style='color:red;text-align:center'>Payment Cancelled</h1><p>No worries — try again anytime.</p>"
+
+if __name__ == '__main__':
+    port = int(os.environ.get('PORT', 8080))
+    app.run(host='0.0.0.0', port=port)

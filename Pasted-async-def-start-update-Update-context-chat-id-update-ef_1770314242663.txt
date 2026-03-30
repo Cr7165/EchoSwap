@@ -1,0 +1,59 @@
+async def start(update: Update, context):
+    chat_id = update.effective_chat.id
+    users = db['users']
+    if str(chat_id) not in users:
+        users[str(chat_id)] = {'tier': 'basic', 'holdings': {}}
+        db['users'] = users
+    await update.message.reply_text(
+        "Welcome to Echo Swap!\n\n"
+        "You'll get SOL dip alerts here.\n"
+        "Commands:\n"
+        "/status - current price\n"
+        "/add SOL 10 - add holdings\n"
+        "/portfolio - see your value"
+    )
+
+async def status(update: Update, context):
+    price = get_sol_price()
+    text = f"Current SOL: ${price:,.2f}" if price else "Fetching..."
+    await update.message.reply_text(text)
+
+async def add_holding(update: Update, context):
+    chat_id = update.effective_chat.id
+    args = context.args
+    if len(args) != 2:
+        await update.message.reply_text("Usage: /add SOL 10")
+        return
+    coin, amount = args[0].upper(), float(args[1])
+    users = db['users']
+    if str(chat_id) in users:
+        holdings = users[str(chat_id)].get('holdings', {})
+        holdings[coin] = holdings.get(coin, 0) + amount
+        users[str(chat_id)]['holdings'] = holdings
+        db['users'] = users
+        await update.message.reply_text(f"Added {amount} {coin}")
+    else:
+        await update.message.reply_text("Use /start first")
+
+async def portfolio(update: Update, context):
+    chat_id = update.effective_chat.id
+    users = db['users']
+    if str(chat_id) in users:
+        holdings = users[str(chat_id)].get('holdings', {})
+        price = get_sol_price()
+        if price is None:
+            await update.message.reply_text("Price fetch failed")
+            return
+        total = 0
+        text = "Your portfolio:\n"
+        for coin, amt in holdings.items():
+            if coin == 'SOL':
+                value = amt * price
+                text += f"{amt:.2f} {coin} = ${value:,.2f}\n"
+                total += value
+            else:
+                text += f"{amt:.2f} {coin} (value unknown)\n"
+        text += f"\nTotal value (SOL only): ${total:,.2f}"
+        await update.message.reply_text(text)
+    else:
+        await update.message.reply_text("Use /start first")
